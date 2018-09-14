@@ -5,7 +5,7 @@ pipeline {
          steps {
             sh ‘gradle clean compileJava’
             sh ‘./gradlew clean build’
-         }
-      }
-   }
-}
+            }
+                                }
+            }
+            }
