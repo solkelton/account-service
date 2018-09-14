@@ -1,3 +1,3 @@
 # account-service
 
-This is a service application
+This is a service application. REad ME!
