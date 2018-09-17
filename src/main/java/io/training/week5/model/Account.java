@@ -1,6 +1,7 @@
 package io.training.week5.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.training.week5.services.AddressService;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.ColumnResult;
@@ -42,14 +43,13 @@ public class Account {
 
   @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//  @JoinColumn(name="accountId")
+//  @JoinColumn(name="addressId")
   private List<Address> addressList;
 
   public Account(String firstName, String lastName, String emailAddress) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.emailAddress = emailAddress;
-    this.addressList = null;
   }
 
   public Account() {}

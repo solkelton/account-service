@@ -1,14 +1,18 @@
 package io.training.week5.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.CascadeType;
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedNativeQuery;
+import javax.persistence.OrderColumn;
 import javax.persistence.SqlResultSetMapping;
+import javax.persistence.Transient;
 
 
 @Entity
@@ -33,6 +37,7 @@ import javax.persistence.SqlResultSetMapping;
 )
 public class Address {
 
+
   @Id
   @GeneratedValue
   private long id;
@@ -42,9 +47,10 @@ public class Address {
   private String state;
   private String zip;
   private String country;
-  @ManyToOne
+//  @ManyToOne(targetEntity = Account.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name="accountId")
-  private Account account;
+  @JsonIgnore
+  private long accountId;
 
   public Address(String building, String street, String city, String state, String zip,
       String country) {
@@ -111,4 +117,21 @@ public class Address {
   public void setCountry(String country) {
     this.country = country;
   }
+
+  public long getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(long accountId) {
+    this.accountId = accountId;
+  }
+
+  //  public Account getAccount() {
+//    return account;
+//  }
+//
+//  public void setAccount(Account account) {
+//    this.account = account;
+//  }
+
 }

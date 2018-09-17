@@ -11,4 +11,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
   @Query(nativeQuery=true, name="retrieveAccount")
   Account retrieveAccount(long id);
 
+  Account findById(long id);
+
+  Account getAccountById(long id);
+
+
+
+
 }

@@ -5,14 +5,15 @@ import io.training.week5.model.Address;
 import io.training.week5.services.AccountService;
 import io.training.week5.services.AddressService;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping
 public class AccountController {
 
   private AccountService accountService;
@@ -24,21 +25,23 @@ public class AccountController {
     this.addressService = addressService;
   }
 
-  @GetMapping("/{id}")
-  public Account retrieveAccount(@PathVariable("id") long id) {
-    Account account = accountService.retrieveAccount(id);
-    account.setAddressList(addressService.retrieveAddress(id));
-    return account;
+  @GetMapping("/{accountId}")
+  public Account retrieveAccount(@PathVariable("accountId") long accountId) {
+    return accountService.retrieveAccount(accountId);
   }
 
-  @GetMapping("/{id}/address")
-  public List<Address> retrieveAddress(@PathVariable("id") long id) {
-    return addressService.retrieveAddress(id);
+  @GetMapping("/{accountId}/address")
+  public List<Address> retrieveAddress(@PathVariable("accountId") long accountId) {
+    return addressService.retrieveAddress(accountId);
   }
 
-  @GetMapping("{accountId}/address/{id}")
-  public Optional<Address> retrieveAddress(@PathVariable("accountId") long accountId, @PathVariable("id") long id) {
-    return addressService.retrieveOneAddress(accountId, id);
+  @GetMapping("{accountId}/address/{addressId}")
+  public Address retrieveAddress(@PathVariable("accountId") long accountId, @PathVariable("addressId") long addressId) {
+    return addressService.retrieveOneAddress(accountId, addressId);
   }
 
+  @PostMapping("/{accountId}/address")
+  public void addAddressToAccount(@PathVariable("accountId") long accountId, @RequestBody Address newAddress) {
+    addressService.addAddress(accountId, newAddress);
+  }
 }

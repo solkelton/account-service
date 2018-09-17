@@ -14,7 +14,7 @@ public class AccountService {
   }
 
   public Account retrieveAccount(long id) {
-    return accountRepository.retrieveAccount(id);
+    return accountRepository.getAccountById(id);
   }
 
 }
