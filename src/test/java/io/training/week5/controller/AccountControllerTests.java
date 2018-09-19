@@ -5,12 +5,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.training.week5.model.Account;
 import io.training.week5.model.Address;
 import io.training.week5.services.AccountService;
@@ -50,10 +53,10 @@ public class AccountControllerTests {
   public void testRetrieveAccount_ValidInput_ShouldReturnFoundAccountEntry() throws Exception {
     when(accountService.retrieveAccount(1)).thenReturn(account);
 
-    mockMvc.perform(get("/accounts/{id}",1))
+    mockMvc.perform(get("/{id}",1))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-        .andExpect(jsonPath("$.*", hasSize(3)))
+        .andExpect(jsonPath("$.*", hasSize(4)))
         .andExpect(jsonPath("$.firstName", Matchers.is(account.getFirstName())))
         .andExpect(jsonPath("$.lastName", Matchers.is(account.getLastName())))
         .andExpect(jsonPath("$.emailAddress", Matchers.is(account.getEmailAddress())));
@@ -66,10 +69,10 @@ public class AccountControllerTests {
   public void testRetrieveAddress_ValidInput_ShouldReturnArrayOfAddresses() throws Exception {
     when(addressService.retrieveAddress(1)).thenReturn(account.getAddressList());
 
-    mockMvc.perform(get("/accounts/{accountId}/address", 1))
+    mockMvc.perform(get("/{accountId}/address", 1))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-        .andExpect(jsonPath("$[0].*", hasSize(8)))
+        .andExpect(jsonPath("$[0].*", hasSize(7)))
         .andExpect(jsonPath("$", hasSize(2)))
         .andExpect(jsonPath("$[0].building", Matchers.is("18")))
         .andExpect(jsonPath("$[1].building", Matchers.is("11700")));
@@ -80,16 +83,48 @@ public class AccountControllerTests {
 
   @Test
   public void testRetrieveOneAddress_ValidInput_ShouldReturnFoundAddressEntry() throws Exception {
-    when(addressService.retrieveOneAddress(1,1)).thenReturn(
-        java.util.Optional.ofNullable(account.getAddressList().get(0)));
+    when(addressService.retrieveOneAddress(1,1)).thenReturn(account.getAddressList().get(0));
 
-    mockMvc.perform(get("/accounts/{accountId}/address/{id}",1,1 ))
+    mockMvc.perform(get("/{accountId}/address/{id}",1,1 ))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
         .andExpect(jsonPath("$.building", Matchers.is("18")));
 
     verify(addressService, times(1)).retrieveOneAddress(1,1);
     verifyNoMoreInteractions(addressService);
+  }
+
+  @Test
+  public void testAddAddress_ValidInput_ShouldCreateNewEntry() throws Exception {
+    mockMvc.perform(post("/{accountId}/address", account.getId())
+        .content(asJsonString(account.getAddressList().get(0)))
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  public void testRemoveAllAddress_ValidInput_ShouldDeleteEntries() throws Exception {
+    mockMvc.perform(delete("/{accountId}/address", 1)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  public void testRemoveAnAddress_ValidInput_ShouldDeleteEntry() throws Exception {
+    mockMvc.perform(delete("/{accountId}/address/{addressId}", 1, 2)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  public void testRemoveAccount_ValidInput_ShouldDeleteEntry() throws Exception {
+    mockMvc.perform(delete("/{accountId}", 1)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
   }
 
   private Account createTestingAccount() {
@@ -110,6 +145,15 @@ public class AccountControllerTests {
     return account;
   }
 
+  private static String asJsonString(final Object obj) {
+    try {
+      final ObjectMapper mapper = new ObjectMapper();
+      final String jsonContent = mapper.writeValueAsString(obj);
+      return jsonContent;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
 
 }
