@@ -134,4 +134,17 @@ public class Address {
 //    this.account = account;
 //  }
 
+
+  @Override
+  public String toString() {
+    return "Address{" +
+        "building='" + building + '\'' +
+        ", street='" + street + '\'' +
+        ", city='" + city + '\'' +
+        ", state='" + state + '\'' +
+        ", zip='" + zip + '\'' +
+        ", country='" + country + '\'' +
+        ", accountId=" + accountId +
+        '}';
+  }
 }

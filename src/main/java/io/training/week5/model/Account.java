@@ -93,4 +93,13 @@ public class Account {
   public void setAddressList(List<Address> addressList) {
     this.addressList = addressList;
   }
+
+  @Override
+  public String toString() {
+    return "Account{" +
+        "firstName='" + firstName + '\'' +
+        ", lastName='" + lastName + '\'' +
+        ", emailAddress='" + emailAddress + '\'' +
+        '}';
+  }
 }
